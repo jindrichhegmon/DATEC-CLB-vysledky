@@ -243,18 +243,6 @@
   .chip { padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 12.5px; }
   .chip b { font-weight: 700; }
 
-  /* ---------- import ---------- */
-  .import h2 { text-align: center; }
-  .import p.lead { text-align: center; color: var(--muted); font-size: 14px; margin-top: 4px; }
-  .links { display: grid; gap: 12px; margin-top: 18px; }
-  @media (min-width: 640px) { .links { grid-template-columns: 1fr 1fr; } }
-  .link { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--hairline); border-radius: 12px; background: var(--surface-2); text-decoration: none; color: inherit; transition: box-shadow .15s ease, transform .15s ease; }
-  .link:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
-  .link .ic { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
-  .link b { display: block; font-weight: 600; color: var(--ink); }
-  .link small { display: block; color: var(--muted); font-size: 13px; }
-  .link .cta { display: inline-flex; align-items: center; gap: 4px; color: var(--link); font-weight: 600; font-size: 13.5px; margin-top: 4px; }
-
   .foot { font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
   .empty { padding: 28px; text-align: center; color: var(--muted); }
   .hidden { display: none !important; }
@@ -336,12 +324,6 @@
     </div>
   </section>
 
-  <section class="card import">
-    <h2>Import účetních dat</h2>
-    <p class="lead">Data z Heliosu se musí nahrát, aby byla aktuální. Jedna firma trvá maximálně minutu…</p>
-    <div class="links" id="links"></div>
-  </section>
-
   <footer class="foot">
     <span id="footLeft">Zdroje: Softr databáze DATEC CONSULTING (Ucty 5-6, DATEC Ucty 5-6) · SQL CLB1 SOFT-CLB-POJISTOVNY přes Make</span>
     <span id="footRight"></span>
@@ -363,17 +345,10 @@
   };
   // bez středníků – webhook pouští jen čisté SELECTy
   const POJ_SQL = "SELECT STRING_AGG(CONCAT(ISNULL(Rok,0), '~', ISNULL(CisloRadku,9), '~', ISNULL(Pracoviste,''), '~', CAST(ISNULL(VynosyAktualniMesic,0) AS int), '~', CAST(ISNULL(VynosyPredchazejiciMesic,0) AS int), '~', CAST(ISNULL(VynosyAktualniRok,0) AS int), '~', CAST(ISNULL(OdhadZaMesic,0) AS int)), '|') AS csv_vystup FROM CLB1.dbo.[SOFT-CLB-POJISTOVNY]";
-  const PORTAL = "https://portal.ddeconsulting.cz";
 
   const FIRMY = {
-    datec: { kratce: "DATEC", nazev: "DATEC Consulting a.s.", links: [
-      { nazev: "DATEC Consulting a.s.", popis: "Hlavní kniha, Salda, a účetní osnova", url: PORTAL + "/datec", cta: "Spustit import" },
-      { nazev: "Hlavní kniha DATEC", popis: "Náklady a výnosy + hlavní kniha", url: PORTAL + "/sql-dotaz-datechk", cta: "Spustit nahlížení" },
-    ] },
-    clb: { kratce: "Centrum LB", nazev: "Centrum pro léčbu bolesti a paliativní medicínu s.r.o.", links: [
-      { nazev: "Centrum pro léčbu bolesti a paliativní medicínu s.r.o.", popis: "Hlavní kniha, Salda, a účetní osnova", url: PORTAL + "/centrumlb", cta: "Spustit import" },
-      { nazev: "Hlavní kniha CLB", popis: "Náklady a výnosy + hlavní kniha", url: PORTAL + "/sql-dotaz-clbhk", cta: "Spustit nahlížení" },
-    ] },
+    datec: { kratce: "DATEC", nazev: "DATEC Consulting a.s." },
+    clb: { kratce: "Centrum LB", nazev: "Centrum pro léčbu bolesti a paliativní medicínu s.r.o." },
   };
 
   /* ======================= snímek dat (záloha, 22. 8. 2026) ======================= */
@@ -596,14 +571,6 @@
     }).join("") : '<tr><td colspan="5" class="empty">Žádná data.</td></tr>';
   }
 
-  function renderLinks() {
-    const f = FIRMY[state.firma];
-    const icon = state.firma === "clb"
-      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6M8 8v4"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.3a1 1 0 0 0-.7-.9l-1.9-.7a1 1 0 0 1-.6-.5l-1.5-3.1A1 1 0 0 0 16.4 8H14"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>'
-      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M10 8h4M10 12h4M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>';
-    $("links").innerHTML = f.links.map((l) => '<a class="link" href="' + esc(l.url) + '" target="_blank" rel="noopener"><span class="ic">' + icon + "</span><span><b>" + esc(l.nazev) + "</b><small>" + esc(l.popis) + '</small><span class="cta">' + esc(l.cta) + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span></a>').join("");
-  }
-
   /* ---------- graf (SVG) ---------- */
   function renderChart(d) {
     const wrap = $("chartWrap"), svg = $("chart"), tip = $("tooltip");
@@ -673,7 +640,7 @@
     $("toggleDiff").checked = state.showDiff;
     $("refreshIcon").classList.toggle("spin", state.loading);
     const d = derive(state.data[state.firma]);
-    renderStatus(); renderKpis(d); renderChart(d); renderTable(d); renderPoj(); renderLinks();
+    renderStatus(); renderKpis(d); renderChart(d); renderTable(d); renderPoj();
     const anyLive = state.source.datec === "live" || state.source.clb === "live" || state.source.poj === "sql" || state.source.poj === "softr";
     $("footRight").textContent = state.loadedAt && anyLive ? "Načteno " + fmtDatum(state.loadedAt) : "Zobrazen snímek z " + fmtDatum(SNAPSHOT_AT) + (state.loadedAt ? " (živé načtení selhalo " + fmtCas(state.loadedAt) + ")" : "");
   }
