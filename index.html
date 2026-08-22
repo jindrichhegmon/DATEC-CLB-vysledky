@@ -201,6 +201,8 @@
     display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow);
   }
   .btn:hover { color: var(--ink); }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn:disabled:hover { color: var(--ink-soft); }
   .btn svg.spin { animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .btn svg.spin { animation: none; } body { transition: none; } }
@@ -300,6 +302,10 @@
         <svg id="refreshIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
         Obnovit
       </button>
+      <button type="button" class="btn" id="btnHk" title="Spustit import hlavní knihy z Heliosu (dva scénáře v Make) a poté načíst nová data">
+        <svg id="hkIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+        Načtení HK
+      </button>
     </div>
   </header>
 
@@ -370,6 +376,15 @@
   // nic jiného než přesně tato čísla.
   const DATA_URL = "https://hook.eu2.make.com/pnvxmtdu7plshq8pa9pudgbe3hfnfs3w";
 
+  // Tlačítko "Načtení HK" spouští import hlavní knihy – dva scénáře v Make,
+  // jeden po druhém (nikoli paralelně, aby si zápisy do CLB1 nelezly do zelí).
+  // Ani jeden nebere vstup, takže ze stránky nejde ovlivnit, co se naimportuje.
+  const HK_HOOKS = [
+    { nazev: "1. scénář", url: "https://hook.eu2.make.com/y9e7ugdunf58p92ohru34wdaj6shltdf" },
+    { nazev: "2. scénář", url: "https://hook.eu2.make.com/ulw42qdo0lsj1zbtm5n3kk4jiq9moiyv" },
+  ];
+  const HK_TIMEOUT = 180000;
+
   const FIRMY = {
     datec: { kratce: "DATEC", nazev: "DATEC Consulting a.s." },
     clb: { kratce: "Centrum LB", nazev: "Centrum pro léčbu bolesti a paliativní medicínu s.r.o." },
@@ -436,6 +451,7 @@
     loadedAt: null,
     loading: false,
     errors: [],
+    hk: { running: false, krok: "", hotovoAt: null, errors: [] },
   };
   try {
     const q = new URLSearchParams(location.search).get("firma");
@@ -498,6 +514,50 @@
     }
   }
 
+  /* ======================= načtení hlavní knihy ======================= */
+  async function spustHook(hook) {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), HK_TIMEOUT);
+    try {
+      const res = await fetch(hook.url, { method: "POST", cache: "no-store", signal: ctl.signal });
+      if (!res.ok) throw new Error("server vrátil HTTP " + res.status);
+      return null;
+    } catch (e) {
+      return hook.nazev + ": " + (e.name === "AbortError"
+        ? "časový limit vypršel (import může v Make dál běžet)"
+        : e.message);
+    } finally {
+      clearTimeout(t);
+    }
+  }
+
+  async function loadHk() {
+    if (state.hk.running || state.loading) return;
+    if (!window.confirm("Spustit načtení hlavní knihy?\n\nProběhnou dva importní scénáře v Make, jeden po druhém. Může to trvat několik minut.")) return;
+    state.hk = { running: true, krok: "", hotovoAt: null, errors: [] };
+    $("btnHk").disabled = true;
+    $("btnRefresh").disabled = true;
+    try {
+      for (let i = 0; i < HK_HOOKS.length; i++) {
+        state.hk.krok = HK_HOOKS[i].nazev + " (" + (i + 1) + "/" + HK_HOOKS.length + ")";
+        renderStatus();
+        $("hkIcon").classList.add("spin");
+        const chyba = await spustHook(HK_HOOKS[i]);
+        if (chyba) state.hk.errors.push(chyba);
+      }
+    } finally {
+      state.hk.running = false;
+      state.hk.krok = "";
+      state.hk.hotovoAt = new Date();
+      $("hkIcon").classList.remove("spin");
+      $("btnHk").disabled = false;
+      $("btnRefresh").disabled = false;
+      render();
+    }
+    // po importu rovnou natáhnout čerstvá čísla do dashboardu
+    await loadAll();
+  }
+
   /* ======================= odvozená data ======================= */
   // Kumulace obou firem: sečte náklady/výnosy po měsících a znovu spočítá
   // kumulovaný součet v rámci roku i řádek Celkem za aktuální rok.
@@ -545,14 +605,19 @@
 
   function renderStatus() {
     const el = $("status");
+    if (state.hk.running) { el.innerHTML = '<span class="pill loading"><span class="dot"></span>Načítám hlavní knihu · ' + esc(state.hk.krok) + "…</span><span>Může to trvat několik minut, nezavírejte stránku.</span>"; return; }
     if (state.loading) { el.innerHTML = '<span class="pill loading"><span class="dot"></span>Načítám živá data…</span>'; return; }
     const live = firmaLive();
     const parts = [];
+    if (state.hk.hotovoAt) parts.push(state.hk.errors.length
+      ? '<span class="pill snapshot"><span class="dot"></span>Načtení HK skončilo s chybou</span>'
+      : '<span class="pill live"><span class="dot"></span>Hlavní kniha načtena · ' + esc(fmtCas(state.hk.hotovoAt)) + "</span>");
     parts.push(live
       ? '<span class="pill live"><span class="dot"></span>Živá data · ' + esc(fmtCas(state.loadedAt || new Date())) + "</span>"
       : '<span class="pill snapshot"><span class="dot"></span>Snímek dat z ' + esc(fmtDatum(SNAPSHOT_AT)) + "</span>");
     parts.push("<span>Zdroj: hlavní kniha CLB1 (Helios)" + (state.firma === "clb" ? " · pojišťovny z Medistaru" : state.firma === "celkem" ? " · součet DATEC + Centrum LB" : "") + "</span>");
     if (state.errors.length) parts.push('<span class="neg">Nepodařilo se načíst: ' + esc(state.errors.join(" · ")) + "</span>");
+    if (state.hk.errors.length) parts.push('<span class="neg">Načtení HK: ' + esc(state.hk.errors.join(" · ")) + "</span>");
     el.innerHTML = parts.join("");
   }
 
@@ -697,6 +762,7 @@
   $("btnClb").addEventListener("click", () => setFirma("clb"));
   $("btnCelkem").addEventListener("click", () => setFirma("celkem"));
   $("btnRefresh").addEventListener("click", loadAll);
+  $("btnHk").addEventListener("click", loadHk);
   $("toggleDiff").addEventListener("change", (e) => { state.showDiff = e.target.checked; try { localStorage.setItem("vysledky_rozdil", state.showDiff ? "1" : "0"); } catch (err) { /* ignore */ } renderChart(derive(aktualniRows())); });
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => renderChart(derive(aktualniRows())), 120); });
   const mq = window.matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", () => renderChart(derive(aktualniRows())));
