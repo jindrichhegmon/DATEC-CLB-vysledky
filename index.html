@@ -51,6 +51,13 @@
     --naklady: #6b8cf2;
     --vynosy: #b7da9b;
   }
+  :root[data-firma="celkem"] {
+    --ground: #f0ecfa;
+    --accent: #5b3fa8;
+    --accent-soft: #e3dbf5;
+    --naklady: #cf8458;
+    --vynosy: #a08fe0;
+  }
 
   /* ---------- tokens: dark ---------- */
   @media (prefers-color-scheme: dark) {
@@ -93,6 +100,15 @@
       --naklady: #8aa5f5;
       --vynosy: #b9dc9f;
     }
+    :root:not([data-theme="light"])[data-firma="celkem"] {
+      --ground: #171226;
+      --surface: #1f1930;
+      --surface-2: #262040;
+      --accent: #b7a3ee;
+      --accent-soft: #35295a;
+      --naklady: #e59a72;
+      --vynosy: #b1a0ec;
+    }
   }
   :root[data-theme="dark"] {
     --ink: #e8eef4;
@@ -132,6 +148,15 @@
     --accent-soft: #1d3f34;
     --naklady: #8aa5f5;
     --vynosy: #b9dc9f;
+  }
+  :root[data-theme="dark"][data-firma="celkem"] {
+    --ground: #171226;
+    --surface: #1f1930;
+    --surface-2: #262040;
+    --accent: #b7a3ee;
+    --accent-soft: #35295a;
+    --naklady: #e59a72;
+    --vynosy: #b1a0ec;
   }
 
   /* ---------- base ---------- */
@@ -253,7 +278,7 @@
   <header class="head">
     <div>
       <h1 id="title">Průběžné výsledky – DATEC</h1>
-      <p class="lead">Náklady a výnosy z hlavní knihy (Helios) za posledních 13 měsíců. Stejná data jako stránky DATEC a CentrumLB v portálu, na jednom místě a s přepínačem firmy.</p>
+      <p class="lead">Náklady a výnosy z hlavní knihy (Helios) za posledních 13 měsíců. Stejná data jako stránky DATEC a CentrumLB v portálu, na jednom místě a s přepínačem firmy – včetně kumulovaného pohledu za obě firmy dohromady.</p>
       <p class="firm-name" id="firmName" style="margin-top:10px">DATEC Consulting a.s.</p>
     </div>
     <div class="controls">
@@ -265,6 +290,10 @@
         <button type="button" id="btnClb" aria-pressed="false" data-firma="clb">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10H6M8 8v4"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.3a1 1 0 0 0-.7-.9l-1.9-.7a1 1 0 0 1-.6-.5l-1.5-3.1A1 1 0 0 0 16.4 8H14"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
           Centrum LB
+        </button>
+        <button type="button" id="btnCelkem" aria-pressed="false" data-firma="celkem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="9" height="14" rx="1"/><rect x="13" y="3" width="9" height="18" rx="1"/><path d="M5 11h3M5 15h3M16 7h3M16 11h3M16 15h3"/></svg>
+          Obě firmy
         </button>
       </div>
       <button type="button" class="btn" id="btnRefresh" title="Načíst aktuální data">
@@ -344,6 +373,7 @@
   const FIRMY = {
     datec: { kratce: "DATEC", nazev: "DATEC Consulting a.s." },
     clb: { kratce: "Centrum LB", nazev: "Centrum pro léčbu bolesti a paliativní medicínu s.r.o." },
+    celkem: { kratce: "Obě firmy", nazev: "DATEC Consulting a.s. + Centrum LB · kumulovaně" },
   };
 
   /* ======================= snímek dat (záloha, 22. 8. 2026) ======================= */
@@ -409,8 +439,8 @@
   };
   try {
     const q = new URLSearchParams(location.search).get("firma");
-    if (q === "clb" || q === "datec") state.firma = q;
-    else { const s = localStorage.getItem("vysledky_firma"); if (s === "clb" || s === "datec") state.firma = s; }
+    if (FIRMY[q]) state.firma = q;
+    else { const s = localStorage.getItem("vysledky_firma"); if (FIRMY[s]) state.firma = s; }
   } catch (e) { /* bez uložené volby */ }
   try { state.showDiff = localStorage.getItem("vysledky_rozdil") === "1"; } catch (e) { /* ignore */ }
 
@@ -469,6 +499,36 @@
   }
 
   /* ======================= odvozená data ======================= */
+  // Kumulace obou firem: sečte náklady/výnosy po měsících a znovu spočítá
+  // kumulovaný součet v rámci roku i řádek Celkem za aktuální rok.
+  function combinedRows() {
+    const map = new Map();
+    ["datec", "clb"].forEach((k) => {
+      state.data[k].forEach((r) => {
+        if (!isObdobi(r.obdobi)) return;
+        const c = map.get(r.obdobi) || { obdobi: r.obdobi, naklady: 0, vynosy: 0, rozdil: 0, soucet: null };
+        c.naklady += r.naklady; c.vynosy += r.vynosy; c.rozdil += r.rozdil;
+        map.set(r.obdobi, c);
+      });
+    });
+    const mesice = Array.from(map.values()).sort((a, b) => a.obdobi.localeCompare(b.obdobi));
+    let rok = "", sum = 0;
+    mesice.forEach((r) => { const y = r.obdobi.slice(0, 4); if (y !== rok) { rok = y; sum = 0; } sum += r.rozdil; r.soucet = sum; });
+    if (!mesice.length) return [];
+    const posledniRok = mesice[mesice.length - 1].obdobi.slice(0, 4);
+    const vRoce = mesice.filter((r) => r.obdobi.slice(0, 4) === posledniRok);
+    const celkem = vRoce.reduce((s, r) => ({ obdobi: "Celkem", naklady: s.naklady + r.naklady, vynosy: s.vynosy + r.vynosy, rozdil: s.rozdil + r.rozdil, soucet: null }), { obdobi: "Celkem", naklady: 0, vynosy: 0, rozdil: 0, soucet: null });
+    return mesice.concat([celkem]);
+  }
+  function aktualniRows() {
+    return state.firma === "celkem" ? combinedRows() : state.data[state.firma];
+  }
+  function firmaLive() {
+    return state.firma === "celkem"
+      ? state.source.datec === "live" && state.source.clb === "live"
+      : state.source[state.firma] === "live";
+  }
+
   function derive(rows) {
     const mesice = rows.filter((r) => isObdobi(r.obdobi)).sort((a, b) => a.obdobi.localeCompare(b.obdobi));
     const celkem = rows.find((r) => r.obdobi.toLowerCase().startsWith("celkem")) || null;
@@ -486,12 +546,12 @@
   function renderStatus() {
     const el = $("status");
     if (state.loading) { el.innerHTML = '<span class="pill loading"><span class="dot"></span>Načítám živá data…</span>'; return; }
-    const live = state.source[state.firma] === "live";
+    const live = firmaLive();
     const parts = [];
     parts.push(live
       ? '<span class="pill live"><span class="dot"></span>Živá data · ' + esc(fmtCas(state.loadedAt || new Date())) + "</span>"
       : '<span class="pill snapshot"><span class="dot"></span>Snímek dat z ' + esc(fmtDatum(SNAPSHOT_AT)) + "</span>");
-    parts.push("<span>Zdroj: hlavní kniha CLB1 (Helios)" + (state.firma === "clb" ? " · pojišťovny z Medistaru" : "") + "</span>");
+    parts.push("<span>Zdroj: hlavní kniha CLB1 (Helios)" + (state.firma === "clb" ? " · pojišťovny z Medistaru" : state.firma === "celkem" ? " · součet DATEC + Centrum LB" : "") + "</span>");
     if (state.errors.length) parts.push('<span class="neg">Nepodařilo se načíst: ' + esc(state.errors.join(" · ")) + "</span>");
     el.innerHTML = parts.join("");
   }
@@ -616,11 +676,12 @@
     $("firmName").textContent = f.nazev;
     $("btnDatec").setAttribute("aria-pressed", String(state.firma === "datec"));
     $("btnClb").setAttribute("aria-pressed", String(state.firma === "clb"));
+    $("btnCelkem").setAttribute("aria-pressed", String(state.firma === "celkem"));
     $("chartTitle").textContent = f.kratce + " – Náklady – výnosy";
     $("tableTitle").textContent = f.kratce + " – Přehled náklady výnosy";
     $("toggleDiff").checked = state.showDiff;
     $("refreshIcon").classList.toggle("spin", state.loading);
-    const d = derive(state.data[state.firma]);
+    const d = derive(aktualniRows());
     renderStatus(); renderKpis(d); renderChart(d); renderTable(d); renderPoj();
     const anyLive = state.source.datec === "live" || state.source.clb === "live" || state.source.poj === "live";
     $("footRight").textContent = state.loadedAt && anyLive ? "Načteno " + fmtDatum(state.loadedAt) : "Zobrazen snímek z " + fmtDatum(SNAPSHOT_AT) + (state.loadedAt ? " (živé načtení selhalo " + fmtCas(state.loadedAt) + ")" : "");
@@ -634,11 +695,12 @@
   }
   $("btnDatec").addEventListener("click", () => setFirma("datec"));
   $("btnClb").addEventListener("click", () => setFirma("clb"));
+  $("btnCelkem").addEventListener("click", () => setFirma("celkem"));
   $("btnRefresh").addEventListener("click", loadAll);
-  $("toggleDiff").addEventListener("change", (e) => { state.showDiff = e.target.checked; try { localStorage.setItem("vysledky_rozdil", state.showDiff ? "1" : "0"); } catch (err) { /* ignore */ } renderChart(derive(state.data[state.firma])); });
-  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => renderChart(derive(state.data[state.firma])), 120); });
-  const mq = window.matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", () => renderChart(derive(state.data[state.firma])));
-  new MutationObserver(() => renderChart(derive(state.data[state.firma]))).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  $("toggleDiff").addEventListener("change", (e) => { state.showDiff = e.target.checked; try { localStorage.setItem("vysledky_rozdil", state.showDiff ? "1" : "0"); } catch (err) { /* ignore */ } renderChart(derive(aktualniRows())); });
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => renderChart(derive(aktualniRows())), 120); });
+  const mq = window.matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", () => renderChart(derive(aktualniRows())));
+  new MutationObserver(() => renderChart(derive(aktualniRows()))).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
   render();
   loadAll();
