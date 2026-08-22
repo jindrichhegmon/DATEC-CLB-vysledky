@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Výsledky DATEC · Centrum LB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* ---------- tokens: light (default) ---------- */
+  :root {
+    --font-display: "Manrope", "IBM Plex Sans", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+
+    --ink: #152237;
+    --ink-soft: #41506a;
+    --muted: #61708a;
+    --surface: #ffffff;
+    --surface-2: #f6f8fb;
+    --hairline: rgba(21, 34, 55, 0.10);
+    --shadow: 0 1px 2px rgba(21, 34, 55, 0.06), 0 8px 24px rgba(21, 34, 55, 0.05);
+    --thead: #e8dcd9;
+    --thead-ink: #4a3f3c;
+    --pos: #1e8449;
+    --neg: #c0392b;
+    --pos-soft: rgba(30, 132, 73, 0.12);
+    --neg-soft: rgba(192, 57, 43, 0.12);
+    --poj-head: #dbe8ff;
+    --poj-head-ink: #1d3c6e;
+    --poj-total: #eef4ff;
+    --link: #b8811f;
+    --grid: rgba(21, 34, 55, 0.08);
+    --tooltip-bg: #152237;
+    --tooltip-ink: #ffffff;
+    --control-bg: rgba(255, 255, 255, 0.85);
+
+    /* firm: DATEC (default) */
+    --ground: #e9f3f8;
+    --accent: #1e4f80;
+    --accent-ink: #ffffff;
+    --accent-soft: #d6e6f2;
+    --naklady: #e0775f;
+    --vynosy: #8fb0d6;
+  }
+  :root[data-firma="clb"] {
+    --ground: #dff7ef;
+    --accent: #1d6b55;
+    --accent-soft: #cdeee2;
+    --naklady: #6b8cf2;
+    --vynosy: #b7da9b;
+  }
+
+  /* ---------- tokens: dark ---------- */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e8eef4;
+      --ink-soft: #c3cfdb;
+      --muted: #9fb0c0;
+      --surface: #17232e;
+      --surface-2: #1d2a36;
+      --hairline: rgba(232, 238, 244, 0.10);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.25);
+      --thead: #2b3341;
+      --thead-ink: #d8cfcc;
+      --pos: #5ad18a;
+      --neg: #f08a7a;
+      --pos-soft: rgba(90, 209, 138, 0.16);
+      --neg-soft: rgba(240, 138, 122, 0.16);
+      --poj-head: #1f3352;
+      --poj-head-ink: #c9dcff;
+      --poj-total: #1b2a42;
+      --link: #e7b45a;
+      --grid: rgba(232, 238, 244, 0.10);
+      --tooltip-bg: #e8eef4;
+      --tooltip-ink: #152237;
+      --control-bg: rgba(23, 35, 46, 0.85);
+
+      --ground: #0f1a24;
+      --accent: #8fc0f0;
+      --accent-ink: #0f1a24;
+      --accent-soft: #1f3a52;
+      --naklady: #ea8d77;
+      --vynosy: #9dbde0;
+    }
+    :root:not([data-theme="light"])[data-firma="clb"] {
+      --ground: #0e1d18;
+      --surface: #152520;
+      --surface-2: #1a2d27;
+      --accent: #7fd4b6;
+      --accent-soft: #1d3f34;
+      --naklady: #8aa5f5;
+      --vynosy: #b9dc9f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e8eef4;
+    --ink-soft: #c3cfdb;
+    --muted: #9fb0c0;
+    --surface: #17232e;
+    --surface-2: #1d2a36;
+    --hairline: rgba(232, 238, 244, 0.10);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --thead: #2b3341;
+    --thead-ink: #d8cfcc;
+    --pos: #5ad18a;
+    --neg: #f08a7a;
+    --pos-soft: rgba(90, 209, 138, 0.16);
+    --neg-soft: rgba(240, 138, 122, 0.16);
+    --poj-head: #1f3352;
+    --poj-head-ink: #c9dcff;
+    --poj-total: #1b2a42;
+    --link: #e7b45a;
+    --grid: rgba(232, 238, 244, 0.10);
+    --tooltip-bg: #e8eef4;
+    --tooltip-ink: #152237;
+    --control-bg: rgba(23, 35, 46, 0.85);
+
+    --ground: #0f1a24;
+    --accent: #8fc0f0;
+    --accent-ink: #0f1a24;
+    --accent-soft: #1f3a52;
+    --naklady: #ea8d77;
+    --vynosy: #9dbde0;
+  }
+  :root[data-theme="dark"][data-firma="clb"] {
+    --ground: #0e1d18;
+    --surface: #152520;
+    --surface-2: #1a2d27;
+    --accent: #7fd4b6;
+    --accent-soft: #1d3f34;
+    --naklady: #8aa5f5;
+    --vynosy: #b9dc9f;
+  }
+
+  /* ---------- base ---------- */
+  html { background: var(--ground); }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color .25s ease;
+  }
+  * { box-sizing: border-box; }
+  .page { max-width: 1280px; margin: 0 auto; padding: 32px 24px 48px; display: grid; gap: 20px; }
+  @media (max-width: 640px) { .page { padding: 20px 14px 40px; gap: 14px; } }
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(26px, 3.2vw, 34px); font-weight: 800; line-height: 1.15; }
+  h2 { font-size: 20px; font-weight: 700; }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .num { font-variant-numeric: tabular-nums; }
+  a { color: var(--link); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  /* ---------- header ---------- */
+  .head { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; justify-content: space-between; }
+  .head .lead { max-width: 62ch; color: var(--ink-soft); margin-top: 6px; }
+  .firm-name { font-weight: 600; color: var(--accent); font-size: 14px; letter-spacing: .01em; }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .seg { display: inline-flex; padding: 4px; border-radius: 999px; background: var(--control-bg); border: 1px solid var(--hairline); box-shadow: var(--shadow); }
+  .seg button {
+    appearance: none; border: 0; background: transparent; color: var(--ink-soft);
+    font: 600 14px/1 var(--font-body); padding: 10px 16px; border-radius: 999px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px; transition: background-color .15s ease, color .15s ease;
+  }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .btn {
+    appearance: none; border: 1px solid var(--hairline); background: var(--control-bg); color: var(--ink-soft);
+    font: 500 14px/1 var(--font-body); padding: 10px 14px; border-radius: 999px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow);
+  }
+  .btn:hover { color: var(--ink); }
+  .btn svg.spin { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .btn svg.spin { animation: none; } body { transition: none; } }
+  .status { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13px; color: var(--muted); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+  .pill.live { background: var(--pos-soft); color: var(--pos); }
+  .pill.snapshot { background: var(--neg-soft); color: var(--neg); }
+  .pill.loading { background: var(--accent-soft); color: var(--accent); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* ---------- cards ---------- */
+  .card { background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px; box-shadow: var(--shadow); padding: 20px; }
+  @media (min-width: 768px) { .card { padding: 24px; } }
+  .card-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+  .card-head p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+
+  /* ---------- KPI ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  @media (min-width: 1024px) { .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .kpi { padding: 16px 18px; }
+  .kpi .label { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .kpi .icon { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+  .kpi .value { font-family: var(--font-display); font-weight: 800; font-size: clamp(20px, 2.1vw, 26px); margin-top: 8px; letter-spacing: -0.01em; }
+  .kpi .sub { font-size: 12.5px; color: var(--muted); margin-top: 4px; display: flex; gap: 6px; align-items: center; }
+  .pos { color: var(--pos); } .neg { color: var(--neg); }
+
+  /* ---------- chart ---------- */
+  .chart-wrap { position: relative; height: 320px; }
+  .chart-wrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .chart-wrap text { font-family: var(--font-body); font-size: 12px; fill: var(--muted); }
+  .chart-wrap .bar { transition: opacity .15s ease; }
+  .chart-wrap .hot { fill: transparent; }
+  .chart-wrap .hot:hover { fill: var(--grid); }
+  .legend { display: flex; gap: 18px; justify-content: center; margin-top: 10px; font-size: 13px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 5; min-width: 190px;
+    background: var(--tooltip-bg); color: var(--tooltip-ink); padding: 10px 12px; border-radius: 10px;
+    font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.25); opacity: 0; transform: translateY(4px); transition: opacity .12s ease, transform .12s ease;
+  }
+  .tooltip.show { opacity: 1; transform: none; }
+  .tooltip b { display: block; margin-bottom: 4px; font-family: var(--font-display); }
+  .tooltip .row { display: flex; justify-content: space-between; gap: 16px; }
+  .check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-soft); cursor: pointer; }
+  .check input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+  /* ---------- tables ---------- */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; min-width: 640px; }
+  thead th { text-align: right; font-weight: 600; padding: 10px 12px; background: var(--thead); color: var(--thead-ink); }
+  thead th:first-child { text-align: left; border-radius: 10px 0 0 10px; }
+  thead th:last-child { border-radius: 0 10px 10px 0; }
+  tbody td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--hairline); }
+  tbody td:first-child { text-align: left; font-weight: 500; }
+  tbody tr:hover td { background: var(--surface-2); }
+  tbody tr.total td { font-weight: 700; background: var(--accent-soft); border-bottom: 0; }
+  tbody tr.total td:first-child { border-radius: 10px 0 0 10px; }
+  tbody tr.total td:last-child { border-radius: 0 10px 10px 0; }
+  .mon { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 8px; }
+  .badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); }
+  table.poj thead th { background: var(--poj-head); color: var(--poj-head-ink); }
+  table.poj tbody tr.total td { background: var(--poj-total); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 12.5px; }
+  .chip b { font-weight: 700; }
+
+  /* ---------- import ---------- */
+  .import h2 { text-align: center; }
+  .import p.lead { text-align: center; color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .links { display: grid; gap: 12px; margin-top: 18px; }
+  @media (min-width: 640px) { .links { grid-template-columns: 1fr 1fr; } }
+  .link { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--hairline); border-radius: 12px; background: var(--surface-2); text-decoration: none; color: inherit; transition: box-shadow .15s ease, transform .15s ease; }
+  .link:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+  .link .ic { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+  .link b { display: block; font-weight: 600; color: var(--ink); }
+  .link small { display: block; color: var(--muted); font-size: 13px; }
+  .link .cta { display: inline-flex; align-items: center; gap: 4px; color: var(--link); font-weight: 600; font-size: 13.5px; margin-top: 4px; }
+
+  .foot { font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
+  .empty { padding: 28px; text-align: center; color: var(--muted); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="page" id="app">
+  <header class="head">
+    <div>
+      <h1 id="title">Průběžné výsledky – DATEC</h1>
+      <p class="lead">Náklady a výnosy z hlavní knihy (Helios) za posledních 13 měsíců. Stejná data jako stránky DATEC a CentrumLB v portálu, na jednom místě a s přepínačem firmy.</p>
+      <p class="firm-name" id="firmName" style="margin-top:10px">DATEC Consulting a.s.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Výběr firmy">
+        <button type="button" id="btnDatec" aria-pressed="true" data-firma="datec">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M10 8h4M10 12h4M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>
+          DATEC
+        </button>
+        <button type="button" id="btnClb" aria-pressed="false" data-firma="clb">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10H6M8 8v4"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.3a1 1 0 0 0-.7-.9l-1.9-.7a1 1 0 0 1-.6-.5l-1.5-3.1A1 1 0 0 0 16.4 8H14"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          Centrum LB
+        </button>
+      </div>
+      <button type="button" class="btn" id="btnRefresh" title="Načíst aktuální data">
+        <svg id="refreshIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Obnovit
+      </button>
+    </div>
+  </header>
+
+  <div class="status" id="status"><span class="pill loading"><span class="dot"></span>Načítám živá data…</span></div>
+
+  <section class="kpis" id="kpis" aria-label="Klíčové ukazatele"></section>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2 id="chartTitle">DATEC – Náklady – výnosy</h2>
+        <p>Vývoj nákladů a výnosů po měsících</p>
+      </div>
+      <label class="check"><input type="checkbox" id="toggleDiff"> Zobrazit rozdíl</label>
+    </div>
+    <div class="chart-wrap" id="chartWrap">
+      <svg id="chart" role="img" aria-label="Sloupcový graf nákladů a výnosů po měsících"></svg>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2 id="tableTitle">DATEC – Přehled náklady výnosy</h2>
+        <p>Data jsou čerpána z hlavní knihy průběžně · Součet = kumulovaný rozdíl v rámci roku</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="tbl" class="num">
+        <thead><tr><th>Období</th><th>Náklady</th><th>Výnosy</th><th>Rozdíl</th><th>Součet</th></tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card" id="pojCard">
+    <div class="card-head">
+      <div>
+        <h2>Průběžné výsledky pojišťovny CLB</h2>
+        <p id="pojSub">Zdroj Medistar</p>
+      </div>
+      <div class="chips" id="pojChips"></div>
+    </div>
+    <div class="table-wrap">
+      <table id="pojTbl" class="poj num">
+        <thead><tr><th>Pracoviště</th><th>Rok</th><th>Měsíc</th><th>Předcházející měsíc</th><th>Odhad měsíc</th></tr></thead>
+        <tbody id="pojBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card import">
+    <h2>Import účetních dat</h2>
+    <p class="lead">Data z Heliosu se musí nahrát, aby byla aktuální. Jedna firma trvá maximálně minutu…</p>
+    <div class="links" id="links"></div>
+  </section>
+
+  <footer class="foot">
+    <span id="footLeft">Zdroje: Softr databáze DATEC CONSULTING (Ucty 5-6, DATEC Ucty 5-6) · SQL CLB1 SOFT-CLB-POJISTOVNY přes Make</span>
+    <span id="footRight"></span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ======================= konfigurace ======================= */
+  const PROXY_URL = "https://hook.eu2.make.com/ptz4p4y2sw6mylh1xrmvvlyfnd653mgb"; // Make: Claude_softr_read_proxy (POST {path})
+  const SQL_URL = "https://hook.eu2.make.com/aa3rm7fgs3m9sud3v2i2dt87gilvlnxi";   // Make: Claude_sql_skill_MSSQL_CLB1 (POST {SQLDotaz})
+  const DB = "89c93f5d-d0d6-4236-b3a9-f17657f2bdd4"; // Softr databáze DATEC CONSULTING
+  const TABLES = {
+    clb: { id: "h1jOP5szEtstvf", f: { obdobi: "XLgKL", naklady: "9xIof", vynosy: "RV2qB", rozdil: "UY2mu", soucet: "GMpEu" } },
+    datec: { id: "drQd9KEfy7jmCv", f: { obdobi: "TdZ5Z", naklady: "Bb1xG", vynosy: "GoFVz", rozdil: "tPQeZ", soucet: "eAZvY" } },
+    poj: { id: "66kvGQG6ptUcDs", f: { pracoviste: "2nTbH", poradi: "k6sPb", rok: "6iaoh", mesic: "0u6y3", predchozi: "w8k56", rokVynosy: "B3FFl", odhad: "OUwxn", aktualizovano: "nUKPn" } },
+  };
+  // bez středníků – webhook pouští jen čisté SELECTy
+  const POJ_SQL = "SELECT STRING_AGG(CONCAT(ISNULL(Rok,0), '~', ISNULL(CisloRadku,9), '~', ISNULL(Pracoviste,''), '~', CAST(ISNULL(VynosyAktualniMesic,0) AS int), '~', CAST(ISNULL(VynosyPredchazejiciMesic,0) AS int), '~', CAST(ISNULL(VynosyAktualniRok,0) AS int), '~', CAST(ISNULL(OdhadZaMesic,0) AS int)), '|') AS csv_vystup FROM CLB1.dbo.[SOFT-CLB-POJISTOVNY]";
+  const PORTAL = "https://portal.ddeconsulting.cz";
+
+  const FIRMY = {
+    datec: { kratce: "DATEC", nazev: "DATEC Consulting a.s.", links: [
+      { nazev: "DATEC Consulting a.s.", popis: "Hlavní kniha, Salda, a účetní osnova", url: PORTAL + "/datec", cta: "Spustit import" },
+      { nazev: "Hlavní kniha DATEC", popis: "Náklady a výnosy + hlavní kniha", url: PORTAL + "/sql-dotaz-datechk", cta: "Spustit nahlížení" },
+    ] },
+    clb: { kratce: "Centrum LB", nazev: "Centrum pro léčbu bolesti a paliativní medicínu s.r.o.", links: [
+      { nazev: "Centrum pro léčbu bolesti a paliativní medicínu s.r.o.", popis: "Hlavní kniha, Salda, a účetní osnova", url: PORTAL + "/centrumlb", cta: "Spustit import" },
+      { nazev: "Hlavní kniha CLB", popis: "Náklady a výnosy + hlavní kniha", url: PORTAL + "/sql-dotaz-clbhk", cta: "Spustit nahlížení" },
+    ] },
+  };
+
+  /* ======================= snímek dat (záloha, 22. 8. 2026) ======================= */
+  const SNAPSHOT_AT = "2026-08-22T09:20:00+02:00";
+  const SNAPSHOT = {
+    datec: [
+      ["2025-08", 437327.82, 974950.61, 537622.79, 537622.79], ["2025-09", 791966.58, 1321689.40, 529722.82, 1067345.61],
+      ["2025-10", 424824.52, 413430.50, -11394.02, 1055951.59], ["2025-11", 483393.38, 447880.66, -35512.72, 1020438.87],
+      ["2025-12", 3976228.98, 713954.29, -3262274.69, -2241835.82], ["2026-01", 700241.75, 440805.86, -259435.89, -259435.89],
+      ["2026-02", 350965.61, 576269.21, 225303.60, -34132.29], ["2026-03", 630232.75, 410124.66, -220108.09, -254240.38],
+      ["2026-04", 565328.77, 560302.46, -5026.31, -259266.69], ["2026-05", 456984.29, 509627.45, 52643.16, -206623.53],
+      ["2026-06", 379055.03, 543627.72, 164572.69, -42050.84], ["2026-07", 451626.55, 675782.16, 224155.61, 182104.77],
+      ["2026-08", 106907.99, 261705.88, 154797.89, 336902.66], ["Celkem", 3641342.74, 3978245.40, 336902.66, null],
+    ],
+    clb: [
+      ["2025-08", 1696654.47, 1519944.88, -176709.59, -176709.59], ["2025-09", 1337407.03, 1460471.36, 123064.33, -53645.26],
+      ["2025-10", 1408669.73, 1599608.10, 190938.37, 137293.11], ["2025-11", 1482288.14, 1374242.00, -108046.14, 29246.97],
+      ["2025-12", 1968941.54, 2009886.34, 40944.80, 70191.77], ["2026-01", 1750665.00, 1662882.96, -87782.04, -87782.04],
+      ["2026-02", 1534453.08, 1412223.00, -122230.08, -210012.12], ["2026-03", 1423132.41, 1802024.45, 378892.04, 168879.92],
+      ["2026-04", 1546634.00, 2056264.21, 509630.21, 678510.13], ["2026-05", 1444055.49, 1475097.51, 31042.02, 709552.15],
+      ["2026-06", 1600141.89, 1654724.25, 54582.36, 764134.51], ["2026-07", 1651566.26, 1578365.25, -73201.01, 690933.50],
+      ["2026-08", 272705.06, 10809.82, -261895.24, 429038.26], ["Celkem", 11223353.19, 11652391.45, 429038.26, null],
+    ],
+    poj: [
+      [2026, 9, "Celkem", 710647, 1304147, 9580359, 1001366], [2026, 1, "Mobilní hospic", 532526, 959433, 6741204, 750378],
+      [2026, 2, "Ambulance léčby bolesti", 79265, 159923, 1432188, 111691], [2026, 3, "Ambulance paliativní medicíny", 98855, 184789, 1406966, 139296],
+    ],
+  };
+
+  /* ======================= pomocné ======================= */
+  const MESICE = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"];
+  const MESICE_K = ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"];
+  const nf = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+  const fmtKc = (v) => (v === null || v === undefined || !isFinite(v)) ? "—" : nf.format(Math.round(v)) + " Kč";
+  const fmtCompact = (v) => { const a = Math.abs(v); if (a >= 1e6) return (v / 1e6).toLocaleString("cs-CZ", { maximumFractionDigits: 1 }) + " mil."; if (a >= 1e3) return Math.round(v / 1e3) + " tis."; return nf.format(v); };
+  const isObdobi = (s) => /^\d{4}-\d{2}$/.test(s);
+  const mDlouze = (o) => isObdobi(o) ? MESICE[+o.slice(5) - 1] + " " + o.slice(0, 4) : o;
+  const mKratce = (o) => isObdobi(o) ? MESICE_K[+o.slice(5) - 1] + " " + o.slice(2, 4) : o;
+  const fmtDatum = (iso) => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString("cs-CZ", { day: "numeric", month: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" }); };
+  const fmtCas = (d) => d.toLocaleTimeString("cs-CZ", { hour: "2-digit", minute: "2-digit" });
+  const toNum = (v) => { if (v === null || v === undefined || v === "") return null; const n = typeof v === "number" ? v : Number(String(v).replace(/\s/g, "").replace(",", ".")); return isFinite(n) ? n : null; };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const cls = (v) => v > 0 ? "pos" : v < 0 ? "neg" : "";
+  const opravNazev = (s) => String(s || "").replace("lécby", "léčby");
+
+  function rowsFromSnapshot(arr) {
+    return arr.map((r) => ({ obdobi: r[0], naklady: r[1], vynosy: r[2], rozdil: r[3], soucet: r[4] }));
+  }
+  function pojFromSnapshot(arr) {
+    return arr.map((r) => ({ rok: r[0], poradi: r[1], pracoviste: r[2], mesic: r[3], predchozi: r[4], rokVynosy: r[5], odhad: r[6], aktualizovano: SNAPSHOT_AT }));
+  }
+
+  /* ======================= stav ======================= */
+  const state = {
+    firma: "datec",
+    showDiff: false,
+    data: { datec: rowsFromSnapshot(SNAPSHOT.datec), clb: rowsFromSnapshot(SNAPSHOT.clb) },
+    poj: pojFromSnapshot(SNAPSHOT.poj),
+    source: { datec: "snapshot", clb: "snapshot", poj: "snapshot" },
+    updated: { datec: null, clb: null, poj: SNAPSHOT_AT },
+    loadedAt: null,
+    loading: false,
+    errors: [],
+  };
+  try {
+    const q = new URLSearchParams(location.search).get("firma");
+    if (q === "clb" || q === "datec") state.firma = q;
+    else { const s = localStorage.getItem("vysledky_firma"); if (s === "clb" || s === "datec") state.firma = s; }
+  } catch (e) { /* bez uložené volby */ }
+  try { state.showDiff = localStorage.getItem("vysledky_rozdil") === "1"; } catch (e) { /* ignore */ }
+
+  /* ======================= načítání ======================= */
+  async function postJson(url, body, timeoutMs) {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), timeoutMs || 20000);
+    try {
+      const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: ctl.signal });
+      const text = await res.text();
+      if (!res.ok) throw new Error("HTTP " + res.status + (text ? " – " + text.slice(0, 120) : ""));
+      return text;
+    } finally { clearTimeout(t); }
+  }
+
+  async function fetchUcty(key) {
+    const t = TABLES[key];
+    const text = await postJson(PROXY_URL, { path: "/v1/databases/" + DB + "/tables/" + t.id + "/records?limit=100" });
+    const json = JSON.parse(text);
+    const recs = json.data || json.records || json.items || [];
+    if (!Array.isArray(recs) || recs.length === 0) throw new Error("prázdná odpověď");
+    let updated = null;
+    const rows = recs.map((r) => {
+      const f = r.fields || {};
+      if (r.updatedAt && (!updated || r.updatedAt > updated)) updated = r.updatedAt;
+      return { obdobi: String(f[t.f.obdobi] || "").trim(), naklady: toNum(f[t.f.naklady]) || 0, vynosy: toNum(f[t.f.vynosy]) || 0, rozdil: toNum(f[t.f.rozdil]) || 0, soucet: toNum(f[t.f.soucet]) };
+    });
+    return { rows, updated };
+  }
+
+  async function fetchPoj() {
+    // 1) živé SQL (SOFT-CLB-POJISTOVNY)
+    try {
+      const text = (await postJson(SQL_URL, { SQLDotaz: POJ_SQL })).trim();
+      if (!text || text === "Accepted") throw new Error("bez odpovědi");
+      const rows = text.split("|").map((line) => line.split("~")).filter((p) => p.length >= 7).map((p) => ({
+        rok: +p[0], poradi: +p[1], pracoviste: opravNazev(p[2]), mesic: +p[3], predchozi: +p[4], rokVynosy: +p[5], odhad: +p[6], aktualizovano: new Date().toISOString(),
+      }));
+      if (!rows.length) throw new Error("nečitelná odpověď");
+      return { rows, source: "sql" };
+    } catch (e1) {
+      // 2) kopie v Softru (CLB Pojistovny)
+      const t = TABLES.poj;
+      const text = await postJson(PROXY_URL, { path: "/v1/databases/" + DB + "/tables/" + t.id + "/records?limit=50" });
+      const recs = (JSON.parse(text).data) || [];
+      if (!recs.length) throw new Error("SQL: " + e1.message + "; Softr: prázdná odpověď");
+      const rows = recs.map((r) => { const f = r.fields || {}; return {
+        rok: toNum(f[t.f.rok]) || 0, poradi: toNum(f[t.f.poradi]) || 9, pracoviste: opravNazev(f[t.f.pracoviste]), mesic: toNum(f[t.f.mesic]) || 0,
+        predchozi: toNum(f[t.f.predchozi]) || 0, rokVynosy: toNum(f[t.f.rokVynosy]) || 0, odhad: toNum(f[t.f.odhad]) || 0, aktualizovano: f[t.f.aktualizovano] || r.updatedAt || "",
+      }; });
+      return { rows, source: "softr" };
+    }
+  }
+
+  async function loadAll() {
+    if (state.loading) return;
+    state.loading = true; state.errors = [];
+    renderStatus();
+    const [rDatec, rClb, rPoj] = await Promise.allSettled([fetchUcty("datec"), fetchUcty("clb"), fetchPoj()]);
+    if (rDatec.status === "fulfilled") { state.data.datec = rDatec.value.rows; state.source.datec = "live"; state.updated.datec = rDatec.value.updated; } else state.errors.push("DATEC: " + rDatec.reason.message);
+    if (rClb.status === "fulfilled") { state.data.clb = rClb.value.rows; state.source.clb = "live"; state.updated.clb = rClb.value.updated; } else state.errors.push("Centrum LB: " + rClb.reason.message);
+    if (rPoj.status === "fulfilled") { state.poj = rPoj.value.rows; state.source.poj = rPoj.value.source; state.updated.poj = rPoj.value.rows.reduce((m, r) => r.aktualizovano > m ? r.aktualizovano : m, ""); } else state.errors.push("Pojišťovny: " + rPoj.reason.message);
+    state.loadedAt = new Date();
+    state.loading = false;
+    render();
+  }
+
+  /* ======================= odvozená data ======================= */
+  function derive(rows) {
+    const mesice = rows.filter((r) => isObdobi(r.obdobi)).sort((a, b) => a.obdobi.localeCompare(b.obdobi));
+    const celkem = rows.find((r) => r.obdobi.toLowerCase().startsWith("celkem")) || null;
+    const aktualni = mesice[mesice.length - 1] || null;
+    const minuly = mesice.length > 1 ? mesice[mesice.length - 2] : null;
+    const uzavrene = mesice.slice(0, Math.max(0, mesice.length - 1));
+    const klouzavy = uzavrene.reduce((s, r) => ({ rozdil: s.rozdil + r.rozdil, vynosy: s.vynosy + r.vynosy, naklady: s.naklady + r.naklady }), { rozdil: 0, vynosy: 0, naklady: 0 });
+    const rok = aktualni ? aktualni.obdobi.slice(0, 4) : String(new Date().getFullYear());
+    return { mesice, celkem, aktualni, minuly, uzavrene, klouzavy, rok };
+  }
+
+  /* ======================= render ======================= */
+  const $ = (id) => document.getElementById(id);
+
+  function renderStatus() {
+    const el = $("status");
+    if (state.loading) { el.innerHTML = '<span class="pill loading"><span class="dot"></span>Načítám živá data…</span>'; return; }
+    const f = state.firma;
+    const live = state.source[f] === "live";
+    const parts = [];
+    if (live) parts.push('<span class="pill live"><span class="dot"></span>Živá data · ' + esc(fmtCas(state.loadedAt || new Date())) + '</span>');
+    else parts.push('<span class="pill snapshot"><span class="dot"></span>Snímek dat z ' + esc(fmtDatum(SNAPSHOT_AT)) + '</span>');
+    if (live && state.updated[f]) parts.push("<span>Poslední import hlavní knihy: " + esc(fmtDatum(state.updated[f])) + "</span>");
+    if (f === "clb") {
+      const ps = state.source.poj;
+      parts.push("<span>Pojišťovny: " + (ps === "sql" ? "živě z SQL (Medistar)" : ps === "softr" ? "kopie v Softru" + (state.updated.poj ? " z " + esc(fmtDatum(state.updated.poj)) : "") : "snímek") + "</span>");
+    }
+    if (state.errors.length) parts.push('<span class="neg">Nepodařilo se načíst: ' + esc(state.errors.join(" · ")) + "</span>");
+    el.innerHTML = parts.join("");
+  }
+
+  function kpi(label, value, sub, iconSvg) {
+    const c = value === null ? "" : cls(value);
+    const trend = value === null ? "" : (value >= 0
+      ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="' + c + '"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>'
+      : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="' + c + '"><path d="M16 17h6v-6"/><path d="m22 17-8.5-8.5-5 5L2 7"/></svg>');
+    return '<div class="card kpi"><div class="label"><span>' + esc(label) + '</span><span class="icon">' + iconSvg + '</span></div>' +
+      '<div class="value num ' + c + '">' + fmtKc(value) + '</div>' + (sub ? '<div class="sub num">' + trend + '<span>' + esc(sub) + '</span></div>' : "") + "</div>";
+  }
+  const ICON = {
+    sigma: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2"/></svg>',
+    cal: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>',
+    wallet: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>',
+    coins: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>',
+  };
+
+  function renderKpis(d) {
+    const sub = (r) => r ? "Výnosy " + fmtKc(r.vynosy) + " · Náklady " + fmtKc(r.naklady) : "";
+    $("kpis").innerHTML =
+      kpi("Výsledek roku " + d.rok, d.celkem ? d.celkem.rozdil : null, sub(d.celkem), ICON.sigma) +
+      kpi(d.minuly ? "Minulý měsíc · " + mDlouze(d.minuly.obdobi) : "Minulý měsíc", d.minuly ? d.minuly.rozdil : null, sub(d.minuly), ICON.cal) +
+      kpi(d.aktualni ? "Aktuální měsíc · " + mDlouze(d.aktualni.obdobi) + " (průběžně)" : "Aktuální měsíc", d.aktualni ? d.aktualni.rozdil : null, sub(d.aktualni), ICON.wallet) +
+      kpi("Posledních " + d.uzavrene.length + " uzavřených měsíců", d.uzavrene.length ? d.klouzavy.rozdil : null, d.uzavrene.length ? sub(d.klouzavy) : "", ICON.coins);
+  }
+
+  function renderTable(d) {
+    const tb = $("tblBody");
+    if (!d.mesice.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">Žádná data – spusťte import hlavní knihy.</td></tr>'; return; }
+    let html = d.mesice.map((r, i) => {
+      const last = i === d.mesice.length - 1;
+      return "<tr><td>" + esc(r.obdobi) + '<span class="mon">' + esc(mDlouze(r.obdobi)) + "</span>" + (last ? '<span class="badge">průběžně</span>' : "") + "</td>" +
+        "<td>" + fmtKc(r.naklady) + "</td><td>" + fmtKc(r.vynosy) + "</td>" +
+        '<td class="' + cls(r.rozdil) + '" style="font-weight:500">' + fmtKc(r.rozdil) + "</td>" +
+        '<td class="' + (r.soucet === null ? "" : cls(r.soucet)) + '">' + (r.soucet === null ? "—" : fmtKc(r.soucet)) + "</td></tr>";
+    }).join("");
+    if (d.celkem) html += '<tr class="total"><td>Celkem ' + esc(d.rok) + "</td><td>" + fmtKc(d.celkem.naklady) + "</td><td>" + fmtKc(d.celkem.vynosy) + '</td><td class="' + cls(d.celkem.rozdil) + '">' + fmtKc(d.celkem.rozdil) + "</td><td>—</td></tr>";
+    tb.innerHTML = html;
+  }
+
+  function renderPoj() {
+    const card = $("pojCard");
+    if (state.firma !== "clb") { card.classList.add("hidden"); return; }
+    card.classList.remove("hidden");
+    const rows = state.poj.slice().sort((a, b) => {
+      const ac = a.pracoviste.toLowerCase().startsWith("celkem"), bc = b.pracoviste.toLowerCase().startsWith("celkem");
+      return ac ? -1 : bc ? 1 : a.poradi - b.poradi;
+    });
+    const celkem = rows.find((r) => r.pracoviste.toLowerCase().startsWith("celkem"));
+    $("pojSub").textContent = "Zdroj Medistar" + (state.updated.poj ? " · aktualizováno " + fmtDatum(state.updated.poj) : "");
+    $("pojChips").innerHTML = celkem ? '<span class="chip num">Rok ' + esc(celkem.rok) + ": <b>" + fmtKc(celkem.rokVynosy) + '</b></span><span class="chip num">Odhad za měsíc: <b>' + fmtKc(celkem.odhad) + "</b></span>" : "";
+    $("pojBody").innerHTML = rows.length ? rows.map((r) => {
+      const tot = r.pracoviste.toLowerCase().startsWith("celkem");
+      return '<tr class="' + (tot ? "total" : "") + '"><td>' + esc(r.pracoviste) + "</td><td>" + fmtKc(r.rokVynosy) + "</td><td>" + fmtKc(r.mesic) + "</td><td>" + fmtKc(r.predchozi) + "</td><td>" + fmtKc(r.odhad) + "</td></tr>";
+    }).join("") : '<tr><td colspan="5" class="empty">Žádná data.</td></tr>';
+  }
+
+  function renderLinks() {
+    const f = FIRMY[state.firma];
+    const icon = state.firma === "clb"
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10H6M8 8v4"/><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.3a1 1 0 0 0-.7-.9l-1.9-.7a1 1 0 0 1-.6-.5l-1.5-3.1A1 1 0 0 0 16.4 8H14"/><path d="M9 18h6"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M10 8h4M10 12h4M14 21v-3a2 2 0 0 0-4 0v3"/><path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/></svg>';
+    $("links").innerHTML = f.links.map((l) => '<a class="link" href="' + esc(l.url) + '" target="_blank" rel="noopener"><span class="ic">' + icon + "</span><span><b>" + esc(l.nazev) + "</b><small>" + esc(l.popis) + '</small><span class="cta">' + esc(l.cta) + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></span></a>').join("");
+  }
+
+  /* ---------- graf (SVG) ---------- */
+  function renderChart(d) {
+    const wrap = $("chartWrap"), svg = $("chart"), tip = $("tooltip");
+    const W = Math.max(320, wrap.clientWidth), H = wrap.clientHeight || 320;
+    const m = { top: 14, right: 12, bottom: 54, left: 64 };
+    const iw = W - m.left - m.right, ih = H - m.top - m.bottom;
+    const rows = d.mesice;
+    const css = getComputedStyle(document.documentElement);
+    const cN = css.getPropertyValue("--naklady").trim(), cV = css.getPropertyValue("--vynosy").trim(), cInk = css.getPropertyValue("--ink").trim();
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    if (!rows.length) { svg.innerHTML = '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle">Žádná data</text>'; $("legend").innerHTML = ""; return; }
+    let max = 0, min = 0;
+    rows.forEach((r) => { max = Math.max(max, r.naklady, r.vynosy); if (state.showDiff) { max = Math.max(max, r.rozdil); min = Math.min(min, r.rozdil); } });
+    if (max <= 0) max = 1;
+    // pěkné kroky osy
+    const span = max - min; const raw = span / 5; const pow = Math.pow(10, Math.floor(Math.log10(raw))); const step = [1, 2, 2.5, 5, 10].map((k) => k * pow).find((s) => s >= raw) || raw;
+    const yMax = Math.ceil(max / step) * step, yMin = Math.floor(min / step) * step;
+    const y = (v) => m.top + ih - ((v - yMin) / (yMax - yMin)) * ih;
+    const n = rows.length, slot = iw / n, bw = Math.min(26, slot * 0.32), gap = 4;
+    let s = "";
+    for (let v = yMin; v <= yMax + 1e-9; v += step) {
+      const yy = y(v);
+      s += '<line x1="' + m.left + '" x2="' + (W - m.right) + '" y1="' + yy + '" y2="' + yy + '" stroke="var(--grid)" />';
+      s += '<text x="' + (m.left - 10) + '" y="' + (yy + 4) + '" text-anchor="end">' + esc(fmtCompact(v)) + "</text>";
+    }
+    const y0 = y(0);
+    const bar = (x, v, color) => { const yv = y(v), top = Math.min(yv, y0), h = Math.max(0, Math.abs(yv - y0)); const r = Math.min(5, bw / 2, h); return '<path class="bar" fill="' + color + '" d="M' + x + "," + (top + h) + " v" + (-(h - r)) + " a" + r + "," + r + " 0 0 1 " + r + "," + (-r) + " h" + (bw - 2 * r) + " a" + r + "," + r + " 0 0 1 " + r + "," + r + " v" + (h - r) + ' z" />'; };
+    let pts = [];
+    rows.forEach((r, i) => {
+      const cx = m.left + slot * i + slot / 2;
+      const x1 = cx - bw - gap / 2, x2 = cx + gap / 2;
+      s += bar(x1, r.naklady, cN) + bar(x2, r.vynosy, cV);
+      s += '<text x="' + cx + '" y="' + (H - m.bottom + 22) + '" text-anchor="middle" transform="rotate(-25 ' + cx + " " + (H - m.bottom + 22) + ')">' + esc(mKratce(r.obdobi)) + "</text>";
+      pts.push([cx, y(r.rozdil)]);
+    });
+    if (state.showDiff) {
+      s += '<line x1="' + m.left + '" x2="' + (W - m.right) + '" y1="' + y0 + '" y2="' + y0 + '" stroke="' + cInk + '" stroke-opacity=".45" stroke-dasharray="3 3" />';
+      s += '<polyline fill="none" stroke="' + cInk + '" stroke-width="2" stroke-dasharray="5 3" points="' + pts.map((p) => p.join(",")).join(" ") + '" />';
+      pts.forEach((p) => { s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.2" fill="' + cInk + '" />'; });
+    }
+    // aktivní plochy pro tooltip
+    rows.forEach((r, i) => { s += '<rect class="hot" data-i="' + i + '" x="' + (m.left + slot * i) + '" y="' + m.top + '" width="' + slot + '" height="' + ih + '" rx="6" />'; });
+    svg.innerHTML = s;
+    $("legend").innerHTML = '<span><i style="background:' + cN + '"></i>Náklady</span><span><i style="background:' + cV + '"></i>Výnosy</span>' + (state.showDiff ? '<span><i style="background:' + cInk + ';height:2px"></i>Rozdíl</span>' : "");
+    svg.querySelectorAll(".hot").forEach((el) => {
+      el.addEventListener("mouseenter", () => {
+        const r = rows[+el.dataset.i];
+        tip.innerHTML = "<b>" + esc(mDlouze(r.obdobi)) + '</b><div class="row num"><span>Náklady</span><span>' + fmtKc(r.naklady) + '</span></div><div class="row num"><span>Výnosy</span><span>' + fmtKc(r.vynosy) + '</span></div><div class="row num"><span>Rozdíl</span><span style="font-weight:700">' + fmtKc(r.rozdil) + "</span></div>";
+        const rx = +el.getAttribute("x") + slot / 2;
+        const left = Math.min(Math.max(8, rx - 95), W - 200);
+        tip.style.left = left + "px"; tip.style.top = (m.top + 8) + "px"; tip.classList.add("show");
+      });
+      el.addEventListener("mouseleave", () => tip.classList.remove("show"));
+    });
+  }
+
+  function render() {
+    const f = FIRMY[state.firma];
+    document.documentElement.setAttribute("data-firma", state.firma);
+    $("title").textContent = "Průběžné výsledky – " + f.kratce;
+    document.title = "Výsledky DATEC · Centrum LB";
+    $("firmName").textContent = f.nazev;
+    $("btnDatec").setAttribute("aria-pressed", String(state.firma === "datec"));
+    $("btnClb").setAttribute("aria-pressed", String(state.firma === "clb"));
+    $("chartTitle").textContent = f.kratce + " – Náklady – výnosy";
+    $("tableTitle").textContent = f.kratce + " – Přehled náklady výnosy";
+    $("toggleDiff").checked = state.showDiff;
+    $("refreshIcon").classList.toggle("spin", state.loading);
+    const d = derive(state.data[state.firma]);
+    renderStatus(); renderKpis(d); renderChart(d); renderTable(d); renderPoj(); renderLinks();
+    const anyLive = state.source.datec === "live" || state.source.clb === "live" || state.source.poj === "sql" || state.source.poj === "softr";
+    $("footRight").textContent = state.loadedAt && anyLive ? "Načteno " + fmtDatum(state.loadedAt) : "Zobrazen snímek z " + fmtDatum(SNAPSHOT_AT) + (state.loadedAt ? " (živé načtení selhalo " + fmtCas(state.loadedAt) + ")" : "");
+  }
+
+  /* ======================= události ======================= */
+  function setFirma(k) {
+    state.firma = k;
+    try { localStorage.setItem("vysledky_firma", k); } catch (e) { /* ignore */ }
+    render();
+  }
+  $("btnDatec").addEventListener("click", () => setFirma("datec"));
+  $("btnClb").addEventListener("click", () => setFirma("clb"));
+  $("btnRefresh").addEventListener("click", loadAll);
+  $("toggleDiff").addEventListener("change", (e) => { state.showDiff = e.target.checked; try { localStorage.setItem("vysledky_rozdil", state.showDiff ? "1" : "0"); } catch (err) { /* ignore */ } renderChart(derive(state.data[state.firma])); });
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => renderChart(derive(state.data[state.firma])), 120); });
+  const mq = window.matchMedia("(prefers-color-scheme: dark)"); if (mq.addEventListener) mq.addEventListener("change", () => renderChart(derive(state.data[state.firma])));
+  new MutationObserver(() => renderChart(derive(state.data[state.firma]))).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  render();
+  loadAll();
+})();
+</script>
+</body>
+</html>
